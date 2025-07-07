@@ -31,13 +31,9 @@ jobs:
 
       - name: Subir código a Lambda
         run: |
-          aws lambda create-function \
-            --function-name mi-funcion-python \
-            --runtime python3.12 \
-            --role arn:aws:iam::711615380364:role/lambda-execution-role \
-            --handler lambda_function.lambda_handler \
-            --zip-file fileb://lambda.zip \
-            --timeout 10 \
-            --memory-size 128 \
-            --region us-east-1
+          aws lambda update-function-code \
+          --function-name mi-funcion-python \
+          --zip-file fileb://lambda.zip \
+          --region us-east-1
+
 
