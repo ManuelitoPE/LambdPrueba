@@ -1,39 +1,31 @@
-name: Deploy Lambda con OIDC
-
+name: Prune All Lambda Versions
 on:
-  push:
-    branches:
-      - main
-
-permissions:
-  id-token: write    # necesario para OIDC
-  contents: read     # para clonar tu repo
+  schedule:
+    - cron: '05 15 * * 1''  # Diario a medianoche UTC
 
 jobs:
-  deploy:
+  prune-all:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v4
-
-      - name: Mostrar token OIDC (debug)
-        run: |
-          echo "${ACTIONS_ID_TOKEN_REQUEST_URL}"
-        env:
-          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
-
-      - name: Configurar credenciales AWS vía OIDC
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+      - name: Configurar credenciales AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::711615380364:role/OIDC-Lambda
           aws-region: us-east-1
 
-      - name: Subir código a Lambda
+      - name: Listar y podar versiones de todas las Lambdas
         run: |
-          aws lambda update-function-code \
-          --function-name mi-funcion-python \
-          --zip-file fileb://lambda.zip \
-          --region us-east-1
-
-
+          FUNCTIONS=$(aws lambda list-functions --output text --query 'Functions[].FunctionName')
+          for FN in $FUNCTIONS; do
+            VERSIONS=($(aws lambda list-versions-by-function --function-name "$FN" --output text --query 'Versions[].Version'))
+            ALIAS_VERSIONS=($(aws lambda list-aliases --function-name "$FN" --output text --query 'Aliases[].FunctionVersion'))
+            
+            SORTED=($(printf "%s\n" "${VERSIONS[@]}" | sort -n))
+            
+            KEEP=0
+            COUNT=${#SORTED[@]}
+            
+            for (( i=0; i<COUNT-KEEP; i++ )); do
+                aws lambda delete-function --function-name "$FN" --qualifier "$VER"
+            done
+          done
