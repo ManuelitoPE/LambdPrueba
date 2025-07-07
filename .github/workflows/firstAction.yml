@@ -1,0 +1,34 @@
+# Nombre del workflow
+name: Mi Primer Workflow
+
+# Cuándo se ejecuta
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Los trabajos que se ejecutarán
+jobs:
+  # Nombre del job
+  saludo:
+    # Sistema operativo donde se ejecuta
+    runs-on: ubuntu-latest
+    
+    # Pasos del job
+    steps:
+    # Paso 1: Descargar el código del repositorio
+    - name: Checkout del código
+      uses: actions/checkout@v4
+    
+    # Paso 2: Ejecutar un comando simple
+    - name: Saludar
+      run: echo "¡Hola mundo desde GitHub Actions!"
+    
+    # Paso 3: Mostrar información del sistema
+    - name: Mostrar información del sistema
+      run: |
+        echo "Sistema operativo: ${{ runner.os }}"
+        echo "Arquitectura: ${{ runner.arch }}"
+        echo "Repositorio: ${{ github.repository }}"
+        echo "Rama: ${{ github.ref }}"
