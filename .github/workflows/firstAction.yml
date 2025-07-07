@@ -1,34 +1,39 @@
-# Nombre del workflow
-name: Mi Primer Workflow
+name: Deploy Lambda con OIDC
 
-# Cuándo se ejecuta
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
-# Los trabajos que se ejecutarán
+permissions:
+  id-token: write    # necesario para OIDC
+  contents: read     # para clonar tu repo
+
 jobs:
-  # Nombre del job
-  saludo:
-    # Sistema operativo donde se ejecuta
+  deploy:
     runs-on: ubuntu-latest
-    
-    # Pasos del job
+
     steps:
-    # Paso 1: Descargar el código del repositorio
-    - name: Checkout del código
-      uses: actions/checkout@v4
-    
-    # Paso 2: Ejecutar un comando simple
-    - name: Saludar
-      run: echo "¡Hola mundo desde GitHub Actions!"
-    
-    # Paso 3: Mostrar información del sistema
-    - name: Mostrar información del sistema
-      run: |
-        echo "Sistema operativo: ${{ runner.os }}"
-        echo "Arquitectura: ${{ runner.arch }}"
-        echo "Repositorio: ${{ github.repository }}"
-        echo "Rama: ${{ github.ref }}"
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Mostrar token OIDC (debug)
+        run: |
+          echo "${ACTIONS_ID_TOKEN_REQUEST_URL}"
+        env:
+          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
+
+      - name: Configurar credenciales AWS vía OIDC
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: arn:aws:iam::711615380364:role/OIDC-Lambda
+          aws-region: us-east-1
+
+      - name: Subir código a Lambda
+        run: |
+          aws lambda update-function-code \
+          --function-name mi-funcion-python \
+          --zip-file fileb://lambda.zip \
+          --region us-east-1
+
+
