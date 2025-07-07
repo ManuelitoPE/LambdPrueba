@@ -17,6 +17,12 @@ jobs:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
 
+      - name: Mostrar token OIDC (debug)
+        run: |
+          echo "${ACTIONS_ID_TOKEN_REQUEST_URL}"
+        env:
+          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
+
       - name: Configurar credenciales AWS vía OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
