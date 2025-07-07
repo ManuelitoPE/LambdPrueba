@@ -1,8 +1,7 @@
 name: Prune All Lambda Versions
 on:
   schedule:
-    - cron: '05 15 * * 1''  # Diario a medianoche UTC
-
+    - cron: '05 15 * * 1'  # Diario a medianoche UTC
 jobs:
   prune-all:
     runs-on: ubuntu-latest
