@@ -29,6 +29,6 @@ jobs:
             COUNT=${#SORTED[@]}
             
             for (( i=0; i<COUNT-KEEP; i++ )); do
-                aws lambda delete-function --function-name "$FN" --qualifier "$VER"
+                aws lambda delete-function --function-name "$FN"
             done
           done
