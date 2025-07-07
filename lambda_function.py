@@ -20,7 +20,7 @@ def lambda_handler(event, context):
     dict
         Un diccionario que se serializa como JSON y se devuelve como respuesta.
     """
-    print("¡Función Lambda invocada!") # Opcional: para ver en CloudWatch Logs
+    print("¡Función Lambda invocadaaaaa!") # Opcional: para ver en CloudWatch Logs
 
     # El cuerpo de la respuesta debe ser una cadena JSON válida si se invoca vía API Gateway
     return {
