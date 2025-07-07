@@ -1,7 +1,7 @@
 name: Prune All Lambda Versions
 on:
   schedule:
-    - cron: '13 15 * * 1'  # Diario a medianoche UTC
+    - cron: '*/5 * * * *'  # Diario a medianoche UTC
   workflow_dispatch:
 permissions:
   id-token: write    # necesario para OIDC
